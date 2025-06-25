@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./loginSytle.css">
+</head>
+
+<body>
+    <div class="loginWrap">
+        <h1>규창's Cloud</h1>
+		<form method="post" action="/main">
+			<div class="inputArea">
+				<input type="text" autocomplete="off" name="id" required>
+			    <label for="id">ID</label>
+			</div>
+			<div class="inputArea">
+				<input type="password" autocomplete="off" name="password" required>
+			    <label for="pw">PASSWORD</label>
+			</div>
+			<div class="btnArea">
+				<button type="sumbit">LOGIN</button>
+			</div>
+		</form>
+    </div>
+    <script src="./main.js"></script>
+</body>
+</html>

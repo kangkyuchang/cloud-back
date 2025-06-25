@@ -1,0 +1,92 @@
+/* @import url('https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap'); */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    width: 100%;
+    height: 100vh;
+    background-image: url(../asset/sun2.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.loginWrap {
+    position: relative;
+    z-index: 2;
+}
+
+.loginWrap h1 {
+    font-size: 32px;
+    color: #fff;
+    text-align: center;
+}
+
+.inputArea {
+    width: 400px;
+    position: relative;
+    margin-top: 20px;
+}
+
+.inputArea:first-child { margin-top: 0;}
+
+.inputArea input {
+    width: 100%;
+    padding: 20px 10px 10px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #999;
+    font-size: 18px;
+    color: #fff;
+    outline: none;
+}
+
+.inputArea label {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    font-size: 18px;
+    color:#999;
+    transition: all 0.5s ease;
+}
+
+.inputArea input:focus + label,
+.inputArea input:valid + label {
+    top: 0;
+    font-size: 13px;
+    color: #FF4848;
+}
+
+.btnArea {
+    margin-top: 30px;
+}
+
+.btnArea button {
+    width: 100%;
+    height: 50px;
+    background-color: #FF4848;
+    color: #fff;
+    font-size: 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+}

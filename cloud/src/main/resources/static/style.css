@@ -1,0 +1,186 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    /* background-color: black; */
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.headerWrap {
+    width: 100%;
+    height: 10vh;
+    background-color: #FF4848;;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.headerWrap input {
+    width: 50%;
+    height: 60%;
+    background-color: transparent;
+    position: relative;
+    left: 20px;
+    outline: none;
+    border-radius: 8px;
+    border: 2px #FFA2A2 solid;
+    padding: 20px 10px;
+    color: white;
+}
+
+.headerWrap img {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    right: 20px;
+}
+
+.bodyWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 90%;
+}
+
+.menuWrap {
+    width: 20%;
+    height: 100%;
+    border-right: 1px solid gray;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.menuWrap ul {
+    width: 100%;
+    display: flex;
+    border-bottom: 2px solid #F6F6F6;
+    margin-top: 50px;
+    margin-left: 20px;
+    height: 80%;
+}
+
+.menuWrap li {
+    cursor: pointer;
+    font-size: 20px;
+    list-style-type: none;
+    height: 30px;
+}
+
+.menuWrap li:hover {
+    color: #166aec;
+}
+
+.drawer-checkbox {
+    display: none;
+}
+.drawer {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    background-color: #333;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    display: none;
+}
+.drawer-checkbox:checked ~ .drawer {
+    left: 0;
+}
+.drawer-button {
+    position: fixed; /* 위치를 절대적으로 설정 */
+    left: 0px; /* 부모 컨테이너 내의 가장 왼쪽에 배치 */
+    top: 50%; /* 상단에서의 위치 조정도 가능 */
+    z-index: 100; /* 다른 요소 위에 보이도록 z-index 조정 */
+    transform: translateY(-50%);
+    transition: transform 0.5s;
+    display: none;
+    font-size: 25px;
+}
+.drawer-checkbox:checked ~ .drawer-button {
+    transform: translateX(250px);
+}
+.drawer-content {
+    color: white;
+    padding: 20px;
+    text-align: center;
+    display: none;
+}
+
+.mainWrap {
+    width: 70%;
+    /* min-height: 100vh; */
+    height: 100%;
+    /* border: 1px solid black; */
+    display: flex;
+    flex-direction: row;
+    background-color: #F6F6F6;
+    
+}
+
+.item-container {
+    /* margin-left: 50px; */
+    margin-top: 50px;
+    margin-bottom: 50px;
+    width: 100%;
+    display: grid;
+    height: 90%;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-rows: repeat(auto-fill, 161px);
+    justify-items: center;
+    align-items: center;
+    row-gap: 50px;
+    overflow-y: auto;
+}
+
+.item-wrap {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.item-wrap p {
+    margin-top: 10px;
+}
+
+.item {
+    width: 8em;
+    height: 8em;
+    border: 2px solid gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item img {
+    width: 70%;
+}
+
+@media (max-width: 500px) {
+    .menuWrap {
+      display: none;
+    }
+    .mainWrap {
+        width: 100%;
+    }
+    .drawer {
+        display: inline;
+    }
+    .drawer-content {
+        display: inline;
+    }
+    .drawer-button {
+        display: inline;
+    }
+}
