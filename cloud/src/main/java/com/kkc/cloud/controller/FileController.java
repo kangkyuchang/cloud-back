@@ -23,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -122,23 +121,29 @@ public class FileController {
 	public void donwloadFiles(@RequestParam("fileName") List<String> fileNames, @RequestParam("path") String path, HttpServletResponse response) throws Exception {
 		if(fileNames.size() == 1) {
 			Path filePath = Path.of("D:/Cloud-BackEnd/kangkyuchang", path, fileNames.get(0));
-			Resource resource = new UrlResource(filePath.toUri());
-			response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-			
-			if(!resource.exists())
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			
-			String encodedFileName = URLEncoder.encode(resource.getFilename(), "UTF-8").replaceAll("\\+", "%20");
-			response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
-			InputStream in = resource.getInputStream();
-			OutputStream out = response.getOutputStream();
-			byte[] buffer = new byte[102400];
-			int bytesRead;
-			while((bytesRead = in.read(buffer)) != -1) {
-				out.write(buffer, 0, bytesRead);
+			File file = filePath.toFile();
+			if(!file.exists()) {
+				return;
 			}
-			out.flush();
-			return;
+			if(!file.isDirectory()) {
+				Resource resource = new UrlResource(filePath.toUri());
+				response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+				
+				if(!resource.exists())
+					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				
+				String encodedFileName = URLEncoder.encode(resource.getFilename(), "UTF-8").replaceAll("\\+", "%20");
+				response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+				InputStream in = resource.getInputStream();
+				OutputStream out = response.getOutputStream();
+				byte[] buffer = new byte[102400];
+				int bytesRead;
+				while((bytesRead = in.read(buffer)) != -1) {
+					out.write(buffer, 0, bytesRead);
+				}
+				out.flush();
+				return;
+			}
 		}
 		response.setContentType("application/zip");
 		String encodedFileName = URLEncoder.encode("download.zip", "UTF-8").replaceAll("\\+", "%20");
@@ -149,17 +154,37 @@ public class FileController {
 			File file = filePath.toFile();
 			if(!file.exists())
 				continue;
-			FileInputStream fis = new FileInputStream(file);
-			ZipEntry zipeEntry = new ZipEntry(fileName);
-			zos.putNextEntry(zipeEntry);
-			byte[] buffer = new byte[1024];
-			int len;
-			while((len = fis.read(buffer)) > 0) {
-				zos.write(buffer, 0, len);
+			if(file.isDirectory()) {
+				zipDirectory(file, fileName, zos);
 			}
-			fis.close();
-			zos.closeEntry();
+			else 
+				zip(file, "", zos);
 		}
 		zos.finish();
+	}
+	
+	private void zip(File file, String path, ZipOutputStream zos) throws Exception {
+		String zipEntyName = path == "" ? file.getName() : path + "/" + file.getName();
+		zos.putNextEntry(new ZipEntry(zipEntyName));
+		FileInputStream fis = new FileInputStream(file);
+		byte[] buffer = new byte[1024];
+		int len;
+		while((len = fis.read(buffer)) > 0) {
+			zos.write(buffer, 0, len);
+		}
+		fis.close();
+		zos.closeEntry();
+	}
+	
+	private void zipDirectory(File folder, String parentPath, ZipOutputStream zos) throws Exception {
+		for(File file : folder.listFiles()) {
+			String ZipEntryName = parentPath + "/" + file.getName();
+			if(file.isDirectory()) {
+				zipDirectory(file, ZipEntryName, zos);
+			}
+			else {
+				zip(file, parentPath, zos);
+			}
+		}
 	}
 }
