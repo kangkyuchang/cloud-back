@@ -1,6 +1,6 @@
 class ArrayList {
-    constructor() {
-        this.array = new Array(8);
+    constructor(size = 8) {
+        this.array = new Array(size);
         this.numItems = 0;
     }
 
@@ -76,6 +76,16 @@ class ArrayList {
         }
         this.remove(index);
         return index;
+    }
+
+    removeIfExists(E) {
+        for(let i = 0; i < this.numItems; i++) {
+            if(this.array[i] == E) {
+                this.remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     contains(E) {

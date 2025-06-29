@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Noto Sans KR', sans-serif;
-    /* background-color: black; */
+    background-color: #FFFBF1;
     width: 100%;
     height: 100vh;
     overflow: hidden;
@@ -49,30 +49,43 @@ body {
     height: 90%;
 }
 
-.menuWrap {
+.hierarchyWrap {
     width: 20%;
     height: 100%;
-    border-right: 1px solid gray;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.1);
+    background-color: #FFFCF1;
+    border-right: 1px solid #F8E5D3;
+    box-shadow: -3px -3px 5px rgba(0, 0, 0, 0.1);
 }
 
-.menuWrap ul {
-    width: 100%;
-    display: flex;
-    border-bottom: 2px solid #F6F6F6;
-    margin-top: 50px;
-    margin-left: 20px;
-    height: 80%;
-}
-
-.menuWrap li {
+.hierarchy-root {
     cursor: pointer;
-    font-size: 20px;
-    list-style-type: none;
-    height: 30px;
+    width: 100%;
+    display: block;
+    margin-top: 35px;
+    margin-left: 20px;
 }
 
-.menuWrap li:hover {
+.hierarchy-root ul {
+    width: 100%;
+    margin-left: 20px;
+}
+
+.hierarchy-root li {
+    font-size: 20px;
+    margin-top: 5px;
+    list-style-type: none;
+    /* height: 30px; */
+}
+
+.hierarchy-root li p:hover {
+    color: #166aec;
+}
+
+.hierarchy-now {
+    color : #FF4848;
+}
+
+.hierarchy-root h2:hover {
     color: #166aec;
 }
 
@@ -95,10 +108,10 @@ body {
     left: 0;
 }
 .drawer-button {
-    position: fixed; /* 위치를 절대적으로 설정 */
-    left: 0px; /* 부모 컨테이너 내의 가장 왼쪽에 배치 */
-    top: 50%; /* 상단에서의 위치 조정도 가능 */
-    z-index: 100; /* 다른 요소 위에 보이도록 z-index 조정 */
+    position: fixed; 
+    left: 0px;
+    top: 50%; 
+    z-index: 100; 
     transform: translateY(-50%);
     transition: transform 0.5s;
     display: none;
@@ -120,9 +133,13 @@ body {
     height: 100%;
     /* border: 1px solid black; */
     display: flex;
-    flex-direction: row;
-    background-color: #F6F6F6;
-    
+    flex-direction: column;
+    background-color: #FFFCF1;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.mainWrap hr {
+    background-color: #F8E5D3;
 }
 
 .item-container {
@@ -157,7 +174,8 @@ body {
 .item {
     width: 8em;
     height: 8em;
-    border: 2px solid gray;
+    /* box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.4), -3px -3px 5px rgba(0, 0, 0, 0.1); */
+    border: 2px solid #F8E5D3;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -168,7 +186,7 @@ body {
 }
 
 @media (max-width: 500px) {
-    .menuWrap {
+    .hierarchyWrap {
       display: none;
     }
     .mainWrap {
@@ -183,4 +201,35 @@ body {
     .drawer-button {
         display: inline;
     }
+}
+
+.menu-wrap {
+    width: 100%;
+    height: 8%;
+    display: flex;
+    align-items: center;
+    border-bottom: solid 1px #F8E5D3;
+}
+
+.menu-wrap button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 28px;
+    background: #F8E5D3;
+    color: #222222;  /* 어두운 텍스트 색상으로 가독성 확보 */
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(248, 229, 211, 0.5);
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    outline: none;
+    margin-left: 1em;
+}
+
+.menu-wrap button:hover {
+  box-shadow: 0 4px 16px rgba(248, 229, 211, 0.75);
+  transform: translateY(-2px) scale(1.03);
 }

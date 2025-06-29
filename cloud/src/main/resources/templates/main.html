@@ -20,21 +20,36 @@
             <div class="drawer-content">
                 <ul>
                     <li>
-                        <h2>강규창</h2>
+                        강규창
+                        <ul>
+                            <li>ㄴtest</li>
+                            <li>ㄴtest2</li>
+                        </ul>
+                    </li>
+                    <li>
+                        강민희
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="menuWrap">
+        <div class="hierarchyWrap">
             <ul>
-                <li>
-                    강규창
+               <li class="hierarchy-root">
+                    <h2>강규창</h2>
+                </li>
+                <li class="hierarchy-root">
+                    <h2>강민희</h2>
                 </li>
             </ul>
         </div>
         <div class="mainWrap">
+            <div class="menu-wrap">
+                <button type="button" id="uploadBtn">업로드</button>
+                <input type="file" style="display: none" id="fileInput" multiple>
+                <button type="button" id="downloadBtn">다운로드</button>
+            </div>
             <div class="item-container">
-                <div class="item-wrap">
+                <!-- <div class="item-wrap">
                     <div class="item">
                         <img src="/asset/folder.png">
                     </div>
@@ -75,25 +90,7 @@
                         <img src="/asset/file.png" height="80%">
                     </div>
                     <p>5.txt</p>
-                </div>
-                <div class="item-wrap">
-                    <div class="item">
-                        <img src="/asset/file.png" height="80%">
-                    </div>
-                    <p>6.txt</p>
-                </div>
-                <div class="item-wrap">
-                    <div class="item">
-                        <img src="/asset/file.png" height="80%">
-                    </div>
-                    <p>7.txt</p>
-                </div>
-                <div class="item-wrap">
-                    <div class="item">
-                        <img src="/asset/file.png" height="80%">
-                    </div>
-                    <p>8.txt</p>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

@@ -1,0 +1,165 @@
+package com.kkc.cloud.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class FileController {
+
+	@PostMapping("/upload")
+	public ResponseEntity<Void> uploadFile(@RequestParam("path") String path, @RequestParam("files") MultipartFile[] files, HttpSession session) throws IOException {
+		String id = (String) session.getAttribute("id");
+		if(id == null)
+			return ResponseEntity.internalServerError().build();
+		if(!id.equals(LoginController.id))
+			return ResponseEntity.internalServerError().build();
+		String uploadPath = "D:\\Cloud-BackEnd\\kangkyuchang";
+		if(path != "")
+			uploadPath += "\\" + path;
+		File dir = new File(uploadPath);
+		if(!dir.exists())
+			dir.mkdirs();
+		for(MultipartFile file : files) {
+			if(!file.isEmpty()) {
+				File destination = new File(uploadPath, file.getOriginalFilename());
+				file.transferTo(destination);
+			}
+		}
+		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/load")
+	@ResponseBody
+	public List<Map<String, Object>> getList(@RequestParam("directory") String directory, HttpSession session) throws Exception {
+		String id = (String) session.getAttribute("id");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		if(id == null)
+			return list;
+		if(!id.equals(LoginController.id))
+			return list;
+		if(directory == null)
+			return list;
+		String path = "D:\\Cloud-BackEnd\\kangkyuchang";
+		if(!directory.equals("")) {
+			path += "\\" + directory;
+		}
+		System.out.println(path);
+		File dir = new File(path);
+		if(!dir.exists())
+			dir.mkdirs();
+		File[] files = dir.listFiles();
+		if (files != null) {
+			List<Map<String, Object>> filelist = new ArrayList<Map<String, Object>>();
+		    for (File file : files) {
+		    	Map<String, Object> map = new HashMap<String, Object>();
+		    	map.put("name", file.getName());
+		    	if(file.isFile()) {
+		    		map.put("type", "file");
+		    		filelist.add(map);
+		    	}
+		    	else {
+		    		map.put("type", "directory");
+		    		list.add(map);
+		    	}
+		    }
+		    list.addAll(filelist);
+		}
+		return list;
+	}
+	
+//	@GetMapping("/download")
+	public ResponseEntity<Resource> donwloadFile(@RequestParam("fileName") String fileName, @RequestParam("path") String location) throws Exception {
+		try {
+			String root = "D:\\Cloud-BackEnd\\kangkyuchang";
+			if(location != "") {
+				root += "\\" + location;
+			}
+			Path path = Paths.get(root).resolve(fileName).normalize();
+			Resource resource = new UrlResource(path.toUri());
+			System.out.println(path);
+			if(!resource.exists()) 
+				return ResponseEntity.notFound().build();
+			
+			String encodedFileName = URLEncoder.encode(resource.getFilename(), "UTF-8").replaceAll("\\+", "%20");
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"").body(resource);
+		}
+		catch(MalformedURLException e) {
+			return ResponseEntity.badRequest().build();
+		}
+		
+	}
+	
+	@GetMapping("/download")
+	public void donwloadFiles(@RequestParam("fileName") List<String> fileNames, @RequestParam("path") String path, HttpServletResponse response) throws Exception {
+		if(fileNames.size() == 1) {
+			Path filePath = Path.of("D:/Cloud-BackEnd/kangkyuchang", path, fileNames.get(0));
+			Resource resource = new UrlResource(filePath.toUri());
+			response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+			
+			if(!resource.exists())
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			
+			String encodedFileName = URLEncoder.encode(resource.getFilename(), "UTF-8").replaceAll("\\+", "%20");
+			response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+			InputStream in = resource.getInputStream();
+			OutputStream out = response.getOutputStream();
+			byte[] buffer = new byte[102400];
+			int bytesRead;
+			while((bytesRead = in.read(buffer)) != -1) {
+				out.write(buffer, 0, bytesRead);
+			}
+			out.flush();
+			return;
+		}
+		response.setContentType("application/zip");
+		String encodedFileName = URLEncoder.encode("download.zip", "UTF-8").replaceAll("\\+", "%20");
+		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
+		for(String fileName : fileNames) {
+			Path filePath = Path.of("D:/Cloud-BackEnd/kangkyuchang", path, fileName);
+			File file = filePath.toFile();
+			if(!file.exists())
+				continue;
+			FileInputStream fis = new FileInputStream(file);
+			ZipEntry zipeEntry = new ZipEntry(fileName);
+			zos.putNextEntry(zipeEntry);
+			byte[] buffer = new byte[1024];
+			int len;
+			while((len = fis.read(buffer)) > 0) {
+				zos.write(buffer, 0, len);
+			}
+			fis.close();
+			zos.closeEntry();
+		}
+		zos.finish();
+	}
+}
