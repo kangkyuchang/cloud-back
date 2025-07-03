@@ -325,6 +325,26 @@ function main() {
         url += `path=${encodeURIComponent(nowDirectory)}`;
         downloadFile(url, name);
     });
+
+    const removeBtn = document.querySelector("#removeBtn");
+    downloadBtn.addEventListener("click", () => {
+        const formDate = new FormData();
+
+        for (let i = 0; i < files.length; i++) {
+            formDate.append("path", nowDirectory);
+            formDate.append("files", files[i]);
+        }
+
+        fetch("/remove", {
+            method: "post",
+            body: formDate
+        })
+        .then(res => {
+            if(res.ok) {
+                loadFiles(nowDirectory);
+            }
+        });
+    });
 }
 
 main();

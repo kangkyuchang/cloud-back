@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.kkc.cloud.CloudConfig;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
@@ -35,13 +37,13 @@ import jakarta.servlet.http.HttpSession;
 public class FileController {
 
 	@PostMapping("/upload")
-	public ResponseEntity<Void> uploadFile(@RequestParam("path") String path, @RequestParam("files") MultipartFile[] files, HttpSession session) throws IOException {
+	public ResponseEntity<Void> uploadFiles(@RequestParam("path") String path, @RequestParam("files") MultipartFile[] files, HttpSession session) throws IOException {
 		String id = (String) session.getAttribute("id");
 		if(id == null)
 			return ResponseEntity.internalServerError().build();
 		if(!id.equals(LoginController.id))
 			return ResponseEntity.internalServerError().build();
-		String uploadPath = "D:\\Cloud-BackEnd\\kangkyuchang";
+		String uploadPath = CloudConfig.storePath;
 		if(path != "")
 			uploadPath += "\\" + path;
 		File dir = new File(uploadPath);
@@ -67,14 +69,14 @@ public class FileController {
 			return list;
 		if(directory == null)
 			return list;
-		String path = "D:\\Cloud-BackEnd\\kangkyuchang";
+		String path = CloudConfig.storePath;
 		if(!directory.equals("")) {
-			path += "\\" + directory;
+			path += "/" + directory;
 		}
 		System.out.println(path);
 		File dir = new File(path);
 		if(!dir.exists())
-			dir.mkdirs();
+			return list;
 		File[] files = dir.listFiles();
 		if (files != null) {
 			List<Map<String, Object>> filelist = new ArrayList<Map<String, Object>>();
@@ -95,10 +97,35 @@ public class FileController {
 		return list;
 	}
 	
+	@PostMapping("/remove")
+	public ResponseEntity<Void> removeFiles(@RequestParam("fileName") List<String> fileNames, @RequestParam("path") String path) {
+		for(String fileName : fileNames) {
+			Path filePath = Path.of(CloudConfig.storePath, path, fileName);
+			File file = filePath.toFile();
+			if(!file.exists()) {
+				continue;
+			}
+			removeFile(file);
+		}
+		return ResponseEntity.ok().build();
+	}
+	
+	private void removeFile(File file) {
+		if(file.isDirectory()) {
+			File[] children = file.listFiles();
+			if(children != null) {
+				for(File f : children) {
+					removeFile(f);
+				}
+			}
+		}
+		file.delete();
+	}
+	
 //	@GetMapping("/download")
 	public ResponseEntity<Resource> donwloadFile(@RequestParam("fileName") String fileName, @RequestParam("path") String location) throws Exception {
 		try {
-			String root = "D:\\Cloud-BackEnd\\kangkyuchang";
+			String root = CloudConfig.storePath;
 			if(location != "") {
 				root += "\\" + location;
 			}
@@ -120,7 +147,7 @@ public class FileController {
 	@GetMapping("/download")
 	public void donwloadFiles(@RequestParam("fileName") List<String> fileNames, @RequestParam("path") String path, HttpServletResponse response) throws Exception {
 		if(fileNames.size() == 1) {
-			Path filePath = Path.of("D:/Cloud-BackEnd/kangkyuchang", path, fileNames.get(0));
+			Path filePath = Path.of(CloudConfig.storePath, path, fileNames.get(0));
 			File file = filePath.toFile();
 			if(!file.exists()) {
 				return;
@@ -150,7 +177,7 @@ public class FileController {
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
 		ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 		for(String fileName : fileNames) {
-			Path filePath = Path.of("D:/Cloud-BackEnd/kangkyuchang", path, fileName);
+			Path filePath = Path.of(CloudConfig.storePath, path, fileName);
 			File file = filePath.toFile();
 			if(!file.exists())
 				continue;
